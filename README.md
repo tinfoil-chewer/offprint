@@ -50,7 +50,9 @@ Offprint follows your system theme.
 
 ## Supported printers
 
-Developed and tested with the **SELPHY CP1500**. Other recent CP models may work over IPP; reports welcome.
+Developed and tested with the **SELPHY CP1500**: printing, finishes and overcoat designs confirmed on Linux
+(Wi-Fi and USB) and Android (Wi-Fi and direct connection by QR code). Windows builds but hasn't been tested
+on real hardware yet. Other recent CP models may work over IPP; reports welcome.
 
 ## Connections
 
