@@ -76,7 +76,7 @@ jobs:
       - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: '21' }
       # Gradle distribution, plugins and Maven dependencies: restored instead of re-downloaded.
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@v6
       # The NDK and CMake (needed for the QR scanner's C++ code) are installed on demand; keep them between runs.
       - uses: actions/cache@v4
         with:
