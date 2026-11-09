@@ -26,8 +26,9 @@ jobs:
   linux:
     needs: test
     if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
-    # Older Ubuntu = older glibc = the AppImage runs on more distributions.
-    runs-on: ubuntu-22.04
+    # 24.04: the QR scanner's zxing-cpp needs a C++20 standard library newer than 22.04's.
+    # The AppImage therefore needs glibc 2.39+ (distributions from 2024 onward).
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - name: Linux build dependencies
@@ -77,12 +78,34 @@ jobs:
       - uses: subosito/flutter-action@v2
         with: { flutter-version: '${{ env.FLUTTER_VERSION }}', channel: stable, cache: true }
       - run: flutter --disable-analytics
-      - run: flutter build apk --release
+      - name: Release signing key
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            echo "::warning::ANDROID_KEYSTORE_BASE64 secret not set: APKs will be signed with a debug key"
+            exit 0
+          fi
+          echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
+          printf 'storeFile=%s\nstorePassword=%s\nkeyAlias=%s\nkeyPassword=%s\n' \
+            "$RUNNER_TEMP/release.jks" "$KEYSTORE_PASSWORD" "$KEY_ALIAS" "$KEYSTORE_PASSWORD" > app/android/key.properties
+      - name: Build APKs
         working-directory: app
-      - name: Rename
+        run: |
+          flutter build apk --release --split-per-abi
+          flutter build apk --release
+      - name: Collect
         run: |
           version=$(sed -n 's/^version: *\([^+]*\).*/\1/p' app/pubspec.yaml)
-          mkdir -p dist && cp app/build/app/outputs/flutter-apk/app-release.apk "dist/Offprint-$version-android.apk"
+          out=app/build/app/outputs/flutter-apk
+          mkdir -p dist
+          cp "$out/app-release.apk" "dist/Offprint-$version-android-universal.apk"
+          for abi in arm64-v8a armeabi-v7a x86_64; do
+            cp "$out/app-$abi-release.apk" "dist/Offprint-$version-android-$abi.apk"
+          done
+          rm -f app/android/key.properties "$RUNNER_TEMP/release.jks"
       - uses: actions/upload-artifact@v4
         with: { name: android, path: dist/*.apk }
 
@@ -94,6 +117,8 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with: { path: dist, merge-multiple: true }
+      - name: Checksums
+        run: cd dist && sha256sum * > SHA256SUMS.txt && cat SHA256SUMS.txt
       - uses: softprops/action-gh-release@v2
         with:
           draft: true

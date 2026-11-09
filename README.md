@@ -6,7 +6,10 @@ No account, no cloud, no analytics. Offprint talks directly to the printer over 
 cable, and your photos, settings and print history never leave your device.
 
 <p align="center">
-  <img src="docs/screenshots/editor-design.png" width="720" alt="Editor with a custom overcoat design">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/editor-design-dark.png">
+    <img src="docs/screenshots/editor-design-light.png" width="760" alt="Editor with a custom overcoat design pressed into the clear coat">
+  </picture>
 </p>
 
 > Offprint is an independent project. It is not affiliated with, endorsed by or supported by Canon Inc.
@@ -27,9 +30,23 @@ cable, and your photos, settings and print history never leave your device.
 - **Direct connection (Android):** scan the QR code on the printer's screen to print without a router
 - **Local print history** with thumbnails
 
-| | | |
-|---|---|---|
-| ![Home](docs/screenshots/home.png) | ![Photo strips](docs/screenshots/editor-strips.png) | ![QR code on a phone](docs/screenshots/phone-qr.png) |
+### Light and dark
+
+Offprint follows your system theme.
+
+| Light | Dark |
+|---|---|
+| ![Home, light](docs/screenshots/home-light.png) | ![Home, dark](docs/screenshots/home-dark.png) |
+| ![Photo strips, light](docs/screenshots/editor-strips-light.png) | ![Photo strips, dark](docs/screenshots/editor-strips-dark.png) |
+
+<p align="center">
+  <img src="docs/screenshots/phone-qr-light.png" width="260" alt="QR code and caption on a phone, light">
+  &nbsp;&nbsp;
+  <img src="docs/screenshots/phone-qr-dark.png" width="260" alt="QR code and caption on a phone, dark">
+</p>
+
+<sub>Photos in the screenshots are public domain (CC0) from Wikimedia Commons; see
+[credits](docs/screenshots/CREDITS.md).</sub>
 
 ## Supported printers
 
@@ -48,12 +65,35 @@ Finishes and overcoat designs use Canon's network protocol, which the printer on
 
 ## Install
 
-Download the latest build from [Releases](../../releases):
+Download the latest build from [Releases](../../releases).
 
-- **Linux:** `Offprint-x.y.z-x86_64.AppImage`, then `chmod +x` it and run. For USB printing install
-  `ipp-usb` (most distributions ship it).
-- **Windows:** unzip `Offprint-x.y.z-windows-x64.zip` and run `offprint.exe`.
-- **Android:** install `Offprint-x.y.z-android.apk` (allow installing from your browser or file manager).
+**Linux:** `Offprint-x.y.z-x86_64.AppImage`. Make it executable (`chmod +x`) and run it. Needs a distribution
+from 2024 or newer (glibc 2.39+). For printing over USB, install `ipp-usb` (most distributions ship it).
+
+**Windows:** unzip `Offprint-x.y.z-windows-x64.zip` and run `offprint.exe`.
+
+**Android** (7.0+; direct printer connection needs 10+):
+
+| File | For |
+|---|---|
+| `Offprint-x.y.z-android-arm64-v8a.apk` | almost every phone from the last ~8 years |
+| `Offprint-x.y.z-android-armeabi-v7a.apk` | older 32-bit phones |
+| `Offprint-x.y.z-android-x86_64.apk` | emulators, Chromebooks |
+| `Offprint-x.y.z-android-universal.apk` | any device (larger download) |
+
+To get updates automatically, add this repository's URL to [Obtainium](https://github.com/ImranR98/Obtainium).
+
+### Verifying downloads
+
+Each release includes `SHA256SUMS.txt`. Android builds are signed with the Offprint release key, whose
+certificate SHA-256 fingerprint is:
+
+```
+E4:ED:D9:B9:8B:25:C3:25:05:91:AB:AD:09:A8:7D:B0:38:9D:54:87:03:D6:25:B8:20:C7:44:62:AE:7E:3F:B0
+```
+
+Check it with `apksigner verify --print-certs Offprint-*.apk` or an app such as
+[AppVerifier](https://github.com/soupslurpr/AppVerifier).
 
 ## Build from source
 
