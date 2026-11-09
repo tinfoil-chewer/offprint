@@ -1,0 +1,14 @@
+# Build outputs
+/dist/
+*.AppImage
+/packaging/linux/AppDir/
+/tools/appimagetool*
+
+# Python
+__pycache__/
+*.egg-info/
+/tools/selphy-cli/out/
+
+# Editors / OS
+.vscode/
+.DS_Store

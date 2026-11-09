@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Offprint
+GenericName=Photo Printing
+Comment=Offline photo printing for Canon SELPHY printers
+Exec=offprint
+Icon=io.github.tinfoilchewer.offprint
+Categories=Graphics;Photography;
+Keywords=print;photo;selphy;canon;dye-sub;
+Terminal=false
