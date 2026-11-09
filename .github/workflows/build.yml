@@ -75,6 +75,13 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: '21' }
+      # Gradle distribution, plugins and Maven dependencies: restored instead of re-downloaded.
+      - uses: gradle/actions/setup-gradle@v4
+      # The NDK (needed for the QR scanner's C++ code) is over 1 GB; keep it between runs.
+      - uses: actions/cache@v4
+        with:
+          path: /usr/local/lib/android/sdk/ndk
+          key: android-ndk-flutter-${{ env.FLUTTER_VERSION }}
       - uses: subosito/flutter-action@v2
         with: { flutter-version: '${{ env.FLUTTER_VERSION }}', channel: stable, cache: true }
       - run: flutter --disable-analytics
