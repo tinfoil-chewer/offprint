@@ -19,6 +19,15 @@ ThemeData offprintTheme(Brightness brightness) => ThemeData(
       // Keep the app bar the same colour as the page when content scrolls under it
       // (Material 3 otherwise tints it, which looks like a grey band in a monochrome theme).
       appBarTheme: const AppBarTheme(scrolledUnderElevation: 0, surfaceTintColor: Colors.transparent),
+      // Slim, subtle scrollbar.
+      scrollbarTheme: ScrollbarThemeData(
+        thickness: const WidgetStatePropertyAll(6),
+        radius: const Radius.circular(3),
+        crossAxisMargin: 3,
+        mainAxisMargin: 4,
+        thumbColor: WidgetStatePropertyAll(
+            (brightness == Brightness.dark ? Colors.white : Colors.black).withValues(alpha: 0.25)),
+      ),
       fontFamily: 'Inter', // bundled; the print renderer uses it too
       colorScheme: ColorScheme.fromSeed(
         seedColor: const Color(0xFF808080),
