@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults: { run: { working-directory: app } }
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: subosito/flutter-action@v2
         with: { flutter-version: '${{ env.FLUTTER_VERSION }}', channel: stable, cache: true }
       - run: flutter --disable-analytics
@@ -30,7 +30,7 @@ jobs:
     # The AppImage therefore needs glibc 2.39+ (distributions from 2024 onward).
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Linux build dependencies
         run: sudo apt-get update && sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev file
       - uses: subosito/flutter-action@v2
@@ -39,7 +39,7 @@ jobs:
       - run: flutter build linux --release
         working-directory: app
       - run: packaging/linux/build-appimage.sh
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with: { name: linux, path: dist/*.AppImage }
 
   windows:
@@ -47,7 +47,7 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: subosito/flutter-action@v2
         with: { flutter-version: '${{ env.FLUTTER_VERSION }}', channel: stable, cache: true }
       - run: flutter --disable-analytics
@@ -64,7 +64,7 @@ jobs:
           }
           New-Item -ItemType Directory -Force dist | Out-Null
           Compress-Archive -Path "$release/*" -DestinationPath "dist/Offprint-$version-windows-x64.zip"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with: { name: windows, path: dist/*.zip }
 
   android:
@@ -72,13 +72,13 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
         with: { distribution: temurin, java-version: '21' }
       # Gradle distribution, plugins and Maven dependencies: restored instead of re-downloaded.
       - uses: gradle/actions/setup-gradle@v6
       # The NDK and CMake (needed for the QR scanner's C++ code) are installed on demand; keep them between runs.
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: |
             /usr/local/lib/android/sdk/ndk
@@ -115,7 +115,7 @@ jobs:
             cp "$out/app-$abi-release.apk" "dist/Offprint-$version-android-$abi.apk"
           done
           rm -f app/android/key.properties "$RUNNER_TEMP/release.jks"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with: { name: android, path: dist/*.apk }
 
   release:
@@ -124,11 +124,11 @@ jobs:
     runs-on: ubuntu-latest
     permissions: { contents: write }
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with: { path: dist, merge-multiple: true }
       - name: Checksums
         run: cd dist && sha256sum * > SHA256SUMS.txt && cat SHA256SUMS.txt
-      - uses: softprops/action-gh-release@v2
+      - uses: softprops/action-gh-release@v3
         with:
           draft: true
           files: dist/*
